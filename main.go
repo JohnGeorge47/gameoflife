@@ -2,19 +2,24 @@ package main
 
 import "fmt"
 
-//var a = [][]int{
-//	{0, 0, 1, 0},
-//	{0, 1, 1, 0},
-//	{0, 0, 0, 0},
-//	{0, 0, 0, 0},
-//}
 
-func makeNewBoard(m int,n int)[][]int{
+type Game struct {
+	initboard [][]int
+	height int
+	width int
+}
+
+func makeNewBoard(m int,n int)Game{
 	b:=make([][]int,m)
 	for elem:=range b{
 		b[elem]=make([]int,n)
 	}
-	return b
+	board:=Game{
+		initboard: b,
+		height:    m,
+		width:     n,
+	}
+	return board
 }
 
 func initialBoard(b [][]int,m int,n int)[][]int{
@@ -31,11 +36,17 @@ func main() {
 	boardHeight:=4
 	initboard:=makeNewBoard(boardHeight,boardWidth)
 	futureboard:=makeNewBoard(boardHeight,boardWidth)
-	start:=initialBoard(initboard,boardWidth,boardHeight)
-	for i := 0; i < 4; i++ {
-		for j := 1; j < 4; j++ {
-			futureboard = TraverseNeighbors(i, j, start, futureboard)
+	start:=initialBoard(initboard.initboard,boardWidth,boardHeight)
+	start[2][1]=1
+	start[2][2]=1
+	start[0][1]=1
+	for r:=0;r<50;r++  {
+		for i := 0; i < boardHeight; i++ {
+			for j := 1; j < boardWidth; j++ {
+				futureboard.initboard = TraverseNeighbors(i, j, start, futureboard.initboard)
+			}
 		}
+	 start=futureboard.initboard
 	}
 	fmt.Println(futureboard)
 }
