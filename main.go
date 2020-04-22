@@ -2,24 +2,45 @@ package main
 
 import "fmt"
 
-var a = [][]int{
-	{1, 1, 1, 0},
-	{0, 1, 1, 0},
-	{0, 0, 0, 0},
-	{0, 0, 0, 0},
+//var a = [][]int{
+//	{0, 0, 1, 0},
+//	{0, 1, 1, 0},
+//	{0, 0, 0, 0},
+//	{0, 0, 0, 0},
+//}
+
+func makeNewBoard(m int,n int)[][]int{
+	b:=make([][]int,m)
+	for elem:=range b{
+		b[elem]=make([]int,n)
+	}
+	return b
+}
+
+func initialBoard(b [][]int,m int,n int)[][]int{
+	for i:=0;i<m ;i++  {
+		for j:=0;j<n ;j++  {
+			b[i][j]=0
+		}
+	}
+	return b
 }
 
 func main() {
-	var futureboard [4][4]int
+	boardWidth:=4
+	boardHeight:=4
+	initboard:=makeNewBoard(boardHeight,boardWidth)
+	futureboard:=makeNewBoard(boardHeight,boardWidth)
+	start:=initialBoard(initboard,boardWidth,boardHeight)
 	for i := 0; i < 4; i++ {
 		for j := 1; j < 4; j++ {
-			futureboard = TraverseNeighbors(i, j, a, futureboard)
+			futureboard = TraverseNeighbors(i, j, start, futureboard)
 		}
 	}
 	fmt.Println(futureboard)
 }
 
-func TraverseNeighbors(m, n int, board [][]int, nextboard [4][4]int) [4][4]int {
+func TraverseNeighbors(m, n int, board [][]int, nextboard [][]int) [][]int {
 	var aliveNeigbours int
 	for i := -1; i <= 1; i++ {
 		for j := -1; j <= 1; j++ {
