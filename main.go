@@ -3,16 +3,19 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
-	"github.com/gorilla/websocket"
 )
 
-var addr = flag.String("addr", ":8080", "http service address")
+var addr = flag.String("addr", ":8090", "http service address")
 
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
 }
 
 type Game struct {
@@ -34,7 +37,7 @@ func makeNewBoard(m int, n int) Game {
 	return board
 }
 
-func initialBoard(g Game) Game{
+func initialBoard(g Game) Game {
 	for i := 0; i < g.height; i++ {
 		for j := 0; j < g.width; j++ {
 			g.initboard[i][j] = 0
@@ -43,46 +46,43 @@ func initialBoard(g Game) Game{
 	return g
 }
 
-func (g Game)ResetBoard(){
-	g=initialBoard(g)
+func (g Game) ResetBoard() {
+	g = initialBoard(g)
 }
 
 func main() {
-	boardWidth := 4
-	boardHeight := 4
-	initboard := makeNewBoard(boardHeight, boardWidth)
-	futureboard := makeNewBoard(boardHeight, boardWidth)
-	start := initialBoard(initboard)
-
-	for r := 0; r < 50; r++ {
-		for i := 0; i < boardHeight; i++ {
-			for j := 1; j < boardWidth; j++ {
-				futureboard.initboard = futureboard.TraverseNeighbors(start.initboard, futureboard)
-			}
-		}
-		start = futureboard
-	}
-	fmt.Println(futureboard)
-
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-		action(w,r)
+		fmt.Println("here")
+		action(w, r)
 	})
+	http.HandleFunc("/", checkalive)
+	log.Println("Server listening on port:", *addr)
 	err := http.ListenAndServe(*addr, nil)
-	if err!=nil{
-		log.Fatal("error while starting server",err)
+	if err != nil {
+		log.Fatal("error while starting server", err)
 	}
 }
 
-func action( w http.ResponseWriter,r *http.Request){
-	for  {
-		c, err := upgrader.Upgrade(w, r, nil)
-		if err!=nil{
-			log.Fatal(err)
-			return
+func checkalive(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("here"))
+}
+
+func action(w http.ResponseWriter, r *http.Request) {
+	c, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Print("upgrade:", err)
+		return
+	}
+	defer c.Close()
+	for {
+		start()
+		mt, message, err := c.ReadMessage()
+		if err != nil {
+			log.Println("read:", err)
+			break
 		}
-		defer c.Close()
-		mt,message,err:=c.ReadMessage()
-        fmt.Println(mt,message)
+		log.Printf("recv: %s", message)
+		err = c.WriteMessage(mt, message)
 		if err != nil {
 			log.Println("write:", err)
 			break
@@ -90,13 +90,28 @@ func action( w http.ResponseWriter,r *http.Request){
 	}
 }
 
-func (g Game) TraverseNeighbors(board [][]int, nextboard Game) [][]int {
-	m := nextboard.height
-	n := nextboard.width
+func start()[][]int{
+	boardWidth := 4
+	boardHeight := 4
+	initboard := makeNewBoard(boardHeight, boardWidth)
+	futureboard := makeNewBoard(boardHeight, boardWidth)
+	start := initialBoard(initboard)
+	for r := 0; r < 50; r++ {
+		for i := 0; i < boardHeight; i++ {
+			for j := 1; j < boardWidth; j++ {
+				futureboard.initboard = futureboard.TraverseNeighbors(start.initboard, futureboard, i, j)
+			}
+		}
+		start = futureboard
+	}
+	return start.initboard
+}
+
+func (g Game) TraverseNeighbors(board [][]int, nextboard Game, m int, n int) [][]int {
 	var aliveNeigbours int
 	for i := -1; i <= 1; i++ {
 		for j := -1; j <= 1; j++ {
-			if +i >= 0 && n+j >= 0 && m+i < 4 && n+j < 4 {
+			if m+i >= 0 && n+j >= 0 && m+i < g.height && n+j < g.width {
 				aliveNeigbours = board[m+i][n+j] + aliveNeigbours
 			}
 		}

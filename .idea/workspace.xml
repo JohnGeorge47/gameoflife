@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="df9895d0-1ebf-406c-85e2-074cc033cedf" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/socket/socket.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/socket/socket.go" beforeDir="false" afterPath="$PROJECT_DIR$/socket/socket.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,7 +36,7 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$USER_HOME$/websocket" />
   </component>
   <component name="ServiceViewManager">
     <option name="viewStates">
@@ -54,9 +54,9 @@
     <option name="version" value="1" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="730" y="242" key="FileChooserDialogImpl" timestamp="1587541404634">
+    <state x="730" y="242" width="524" height="592" key="FileChooserDialogImpl" timestamp="1587619793825">
       <screen x="65" y="24" width="1855" height="1056" />
     </state>
-    <state x="730" y="242" key="FileChooserDialogImpl/65.24.1855.1056@65.24.1855.1056" timestamp="1587541404634" />
+    <state x="730" y="242" width="524" height="592" key="FileChooserDialogImpl/65.24.1855.1056@65.24.1855.1056" timestamp="1587619793825" />
   </component>
 </project>
