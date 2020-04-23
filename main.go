@@ -6,6 +6,8 @@ import (
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
 )
 
 var addr = flag.String("addr", ":8090", "http service address")
@@ -75,13 +77,13 @@ func action(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Close()
 	for {
-		start()
 		mt, message, err := c.ReadMessage()
 		if err != nil {
 			log.Println("read:", err)
 			break
 		}
-		log.Printf("recv: %s", message)
+		mess:=processMessage(string(message))
+		start(mess)
 		err = c.WriteMessage(mt, message)
 		if err != nil {
 			log.Println("write:", err)
@@ -90,12 +92,14 @@ func action(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func start()[][]int{
+func start(s []string)[][]int{
 	boardWidth := 4
 	boardHeight := 4
 	initboard := makeNewBoard(boardHeight, boardWidth)
 	futureboard := makeNewBoard(boardHeight, boardWidth)
 	start := initialBoard(initboard)
+	start=addBoardElements(s,start)
+	fmt.Println(start)
 	for r := 0; r < 50; r++ {
 		for i := 0; i < boardHeight; i++ {
 			for j := 1; j < boardWidth; j++ {
@@ -106,6 +110,27 @@ func start()[][]int{
 	}
 	return start.initboard
 }
+
+func processMessage(msg string)[]string{
+	fmt.Println(msg)
+	s:=strings.Split(msg," ")
+	fmt.Println(s)
+	return s
+}
+
+func addBoardElements(s []string,board Game)Game{
+	for _, str := range s {
+		splitString:=strings.Split(str,",")
+		str1,err:=strconv.Atoi(splitString[0])
+		str2,err:=strconv.Atoi(splitString[1])
+		if err!=nil{
+			fmt.Println(err)
+		}
+		board.initboard[str1][str2]=1
+	}
+	return board
+}
+
 
 func (g Game) TraverseNeighbors(board [][]int, nextboard Game, m int, n int) [][]int {
 	var aliveNeigbours int
